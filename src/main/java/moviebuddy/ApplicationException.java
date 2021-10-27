@@ -2,6 +2,8 @@ package moviebuddy;
 
 /**
  * @author springrunner.kr@gmail.com
+ *
+ * Application 수행 시 오류가 있을 때, 오류를 예외 객체로 잡아서 외부에 전파.
  */
 @SuppressWarnings("serial")
 public class ApplicationException extends RuntimeException {

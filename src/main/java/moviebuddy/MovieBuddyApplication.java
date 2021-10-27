@@ -36,21 +36,22 @@ public class MovieBuddyApplication {
     /*
      * 애플리케이션 추가 요구사항:
      * 
-     * TODO 1. XML 문서로 작성된 영화 메타데이터도 다룰 수 있게 기능을 확장하라
-     * TODO 2. 영화 메타데이터 위치를 변경할 수 있도록 하라
+     * TODO 1. XML 문서로 작성된 영화 메타데이터도 다룰 수 있게 기능을 확장하라 : loadMovies()
+     * TODO 2. 영화 메타데이터 위치를 변경할 수 있도록 하라 : 현재는 classpath(resources밑)
      * TODO 3. 영화 메타데이터 읽기 속도를 빠르게 하라
      * TODO 4. 시스템 언어설정에 따라 애플리케이션 메시지가 영어 또는 한글로 출력되게 하라
      */
 
+    // 애플리케이션 핵심 로직 구현
     public void run(String[] args) throws Exception {
-        final AtomicBoolean running = new AtomicBoolean(true);
-        final BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-        final PrintWriter output = new PrintWriter(System.out, false);
+        final AtomicBoolean running = new AtomicBoolean(true); // 어플리케이션 동작 제여
+        final BufferedReader input = new BufferedReader(new InputStreamReader(System.in)); // 사용자 입력 명령어 캐치
+        final PrintWriter output = new PrintWriter(System.out, false); // 수행 후 결과 출력
 
         /*--------------------------------------------------------------------------------------*/
         /* 명령어 별 실행 로직을 정의한다. */
 
-        final Map<Command, Consumer<List<String>>> commandActions = new HashMap<>();
+        final Map<Command, Consumer<List<String>>> commandActions = new HashMap<>(); // key : 명령어, value : 명령어 수행 로직
         // 애플리케이션 종료:: ❯ quit
         commandActions.put(Command.Quit, arguments -> {
             output.println("quit application.");
@@ -111,7 +112,7 @@ public class MovieBuddyApplication {
                 // 명령어 해석 후 실행, 연결된 명령어가 없으면 입력 오류 메시지 출력하기
                 Command command = Command.parse(arguments.isEmpty() ? null : arguments.get(0));
                 Consumer<List<String>> commandAction = commandActions.getOrDefault(command, null);
-                if (Objects.isNull(commandAction)) {
+                if (Objects.isNull(commandAction)) { // 정의되지 않은 명령어인 경우.
                     throw new ApplicationException.UndefinedCommandActionException();
                 }
                 commandAction.accept(arguments);

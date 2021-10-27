@@ -9,21 +9,24 @@ import java.util.Objects;
 
 /**
  * @author springrunner.kr@gmail.com
+ * 
+ * 영화의 정보를 담기 위한 속성들로 구성된 모델 클래스
  */
 public class Movie {
 
     public static final DateTimeFormatter DEFAULT_WATCHED_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    private String title;
-    private List<String> genres;
-    private String language;
-    private String country;
-    private int releaseYear;
-    private String director;
-    private List<String> actors;
+    private String title; // 제목
+    private List<String> genres; // 장르
+    private String language; // 언어
+    private String country; // 국가
+    private int releaseYear; // 연도
+    private String director; // 감독
+    private List<String> actors; // 배우
     private URL imdbLink;
-    private LocalDate watchedDate;
+    private LocalDate watchedDate; // 시청 날짜
 
+    // 생성자가 private -> static 메소드로 객체를 생성.
     private Movie(String title, List<String> genres, String language, String country, int releaseYear, String director, List<String> actors, URL imdbLink, LocalDate watchedDate) {
         this.title = Objects.requireNonNull(title, "title is required value");
         this.genres = Objects.nonNull(genres) ? genres : Collections.emptyList();
@@ -77,7 +80,7 @@ public class Movie {
         return "Movie [title=" + title + ", releaseYear=" + releaseYear + ", director=" + director + ", watchedDate=" + watchedDate.format(DEFAULT_WATCHED_DATE_FORMATTER) + "]";
     }
 
-    
+    // movie객체를 생성할 수 있는 of static 메소드 제공.
     public static Movie of(String title, List<String> genres, String language, String country, int releaseYear, String director, List<String> actors, URL imdbLink, String watchedDate) {
         return new Movie(title, genres, language, country, releaseYear, director, actors, imdbLink, LocalDate.parse(watchedDate, Movie.DEFAULT_WATCHED_DATE_FORMATTER));
     }
