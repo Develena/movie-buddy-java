@@ -1,16 +1,8 @@
 package moviebuddy;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,11 +10,10 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import moviebuddy.util.FileSystemUtils;
+import moviebuddy.domain.Movie;
+import moviebuddy.domain.MovieFinder;
 
 /**
  * @author springrunner.kr@gmail.com
@@ -44,6 +35,9 @@ public class MovieBuddyApplication {
 
     // 애플리케이션 핵심 로직 구현
     public void run(String[] args) throws Exception {
+
+        final MovieFinder movieFinder = new MovieFinder();
+
         final AtomicBoolean running = new AtomicBoolean(true); // 어플리케이션 동작 제여
         final BufferedReader input = new BufferedReader(new InputStreamReader(System.in)); // 사용자 입력 명령어 캐치
         final PrintWriter output = new PrintWriter(System.out, false); // 수행 후 결과 출력
@@ -52,18 +46,18 @@ public class MovieBuddyApplication {
         /* 명령어 별 실행 로직을 정의한다. */
 
         final Map<Command, Consumer<List<String>>> commandActions = new HashMap<>(); // key : 명령어, value : 명령어 수행 로직
-        // 애플리케이션 종료:: ❯ quit
+        // command_1 : 애플리케이션 종료:: ❯ quit
         commandActions.put(Command.Quit, arguments -> {
             output.println("quit application.");
             running.set(false);
         });
-        // 감독으로 영화 검색:: ❯ directedBy Michael Bay
+        // command_2 : 감독으로 영화 검색:: ❯ directedBy Michael Bay
         commandActions.put(Command.DirectedBy, arguments -> {
             String director = String.join(" ", arguments.subList(1, arguments.size()));
             if (director.isBlank()) {
                 throw new ApplicationException.InvalidCommandArgumentsException();
             }
-            List<Movie> moviesDirectedBy = directedBy(director);
+            List<Movie> moviesDirectedBy = movieFinder.directedBy(director);
             AtomicInteger counter = new AtomicInteger(1);
 
             output.println(String.format("find for movies by %s.", director));
@@ -73,7 +67,7 @@ public class MovieBuddyApplication {
             });
             output.println(String.format("%d movies found.", moviesDirectedBy.size()));
         });
-        // 개봉년도로 영화 검색:: ❯ releasedYearBy 2015
+        // command_3 : 개봉년도로 영화 검색:: ❯ releasedYearBy 2015
         commandActions.put(Command.releasedYearBy, arguments -> {
             int releaseYear;
             try {
@@ -81,7 +75,7 @@ public class MovieBuddyApplication {
             } catch (IndexOutOfBoundsException | NumberFormatException error) {
                 throw new ApplicationException.InvalidCommandArgumentsException(error);
             }
-            List<Movie> moviesReleasedYearBy = releasedYearBy(releaseYear);
+            List<Movie> moviesReleasedYearBy = movieFinder.releasedYearBy(releaseYear);
             AtomicInteger counter = new AtomicInteger(1);
 
             output.println(String.format("find for movies from %s year.", releaseYear));
@@ -124,69 +118,6 @@ public class MovieBuddyApplication {
         }
     }
 
-    /**
-     * 저장된 영화 목록에서 감독으로 영화를 검색한다.
-     * 
-     * @param directedBy 감독
-     * @return 검색된 영화 목록
-     */
-    public List<Movie> directedBy(String directedBy) {
-        return loadMovies().stream()
-                           .filter(it -> it.getDirector().toLowerCase().contains(directedBy.toLowerCase()))
-                           .collect(Collectors.toList());
-    }
-
-    /**
-     * 저장된 영화 목록에서 개봉년도로 영화를 검색한다.
-     * 
-     * @param releasedYearBy
-     * @return 검색된 영화 목록
-     */
-    public List<Movie> releasedYearBy(int releasedYearBy) {
-        return loadMovies().stream()
-                           .filter(it -> Objects.equals(it.getReleaseYear(), releasedYearBy))
-                           .collect(Collectors.toList());
-    }
-
-    /**
-     * 영화 메타데이터를 읽어 저장된 영화 목록을 불러온다.
-     * 
-     * @return 불러온 영화 목록
-     */
-    public List<Movie> loadMovies() {
-        try {
-            final URI resourceUri = ClassLoader.getSystemResource("movie_metadata.csv").toURI();
-            final Path data = Path.of(FileSystemUtils.checkFileSystem(resourceUri));
-            final Function<String, Movie> mapCsv = csv -> {
-                try {
-                    // split with comma
-                    String[] values = csv.split(",");
-
-                    String title = values[0];
-                    List<String> genres = Arrays.asList(values[1].split("\\|"));
-                    String language = values[2].trim();
-                    String country = values[3].trim();
-                    int releaseYear = Integer.valueOf(values[4].trim());
-                    String director = values[5].trim();
-                    List<String> actors = Arrays.asList(values[6].split("\\|"));
-                    URL imdbLink = new URL(values[7].trim());
-                    String watchedDate = values[8];
-
-                    return Movie.of(title, genres, language, country, releaseYear, director, actors, imdbLink, watchedDate);
-                } catch (IOException error) {
-                    throw new ApplicationException("mapping csv to object failed.", error);
-                }
-            };
-
-            return Files.readAllLines(data, StandardCharsets.UTF_8)
-                        .stream()
-                        .skip(1)
-                        .map(mapCsv)
-                        .collect(Collectors.toList());
-        } catch (IOException | URISyntaxException error) {
-            throw new ApplicationException("failed to load movies data.", error);
-        }
-    }
 
     /**
      * 사용자 명령어 정의
