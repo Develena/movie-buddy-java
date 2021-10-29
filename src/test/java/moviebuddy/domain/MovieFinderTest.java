@@ -10,7 +10,7 @@ public class MovieFinderTest {
 	public static void main(String[] args) {
 //		MovieBuddyApplication application = new MovieBuddyApplication();
 
-		MovieFinder movieFinder = new MovieFinder();
+		MovieFinder movieFinder = new CsvMovieFinder();
 
 		// 마이클 베이 감독의 작품은 3편인 것을 테스트함.
 		List<Movie> result = movieFinder.directedBy("Michael Bay");
