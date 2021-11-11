@@ -1,7 +1,9 @@
 # Learn Essence of Spring Template
 
-본 프로젝트는 Learn Essence of Spring 워크숍(강좌)에서 사용할 템플릿 프로젝트입니다. 
+본 프로젝트는 Learn Essence of Spring 워크숍(강좌)에서 사용할 템플릿 프로젝트입니다.
 
+추가로 develena는 'FastCampus의 유연한 백엔드 개발'강의에서 3가지 요구사항을 수정하여 적용해가는 과정을 형상관리하고 기록합니다.
+ 
 ---
 
 ## MovieBuddy
@@ -39,3 +41,5 @@ $❯ build/moviebuddy/bin/moviebuddy
 ---
 
 워크숍(강좌)에 대한 자세한 소개는 [여기](https://springrunner.dev/training/learn-essence-of-spring-workshop/)에서 볼 수 있습니다.
+
+develena가 정리한 강의 내용과 코드 수정 과정에 대한 설명은 [여기](https://develena.notion.site/FastCampus-Spring-7c1b0b3f57774d93a96816ce5499b143) 에서 확인 가능합니다.
