@@ -1,5 +1,7 @@
 package moviebuddy.domain;
 
+import moviebuddy.MovieBuddyFactory;
+
 import java.util.List;
 
 /**
@@ -8,9 +10,10 @@ import java.util.List;
 public class MovieFinderTest {
 
 	public static void main(String[] args) {
-//		MovieBuddyApplication application = new MovieBuddyApplication();
 
-		MovieFinder movieFinder = new MovieFinder(new CsvMovieReader());
+		MovieBuddyFactory movieBuddyFactory = new MovieBuddyFactory();
+
+		MovieFinder movieFinder = movieBuddyFactory.movieFinder();
 
 		// 마이클 베이 감독의 작품은 3편인 것을 테스트함.
 		List<Movie> result = movieFinder.directedBy("Michael Bay");
