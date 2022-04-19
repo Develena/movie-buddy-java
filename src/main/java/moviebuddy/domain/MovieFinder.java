@@ -11,12 +11,12 @@ import java.util.stream.Collectors;
 @Service
 public class MovieFinder {
 
-  private MovieReader movieReader;// = new CsvMovieReader();
+  private MovieReader movieReader;
 
   // 객체가 생성되는 시점에 주입 받는다.
   @Autowired
-  public MovieFinder(@Qualifier("csvMovieReader") MovieReader movieReader) {
-    this.movieReader = Objects.requireNonNull(movieReader); // 반드시 있어야 할 movieReader.
+  public MovieFinder(MovieReader movieReader) {
+    this.movieReader = Objects.requireNonNull(movieReader);
   }
 
   /**
