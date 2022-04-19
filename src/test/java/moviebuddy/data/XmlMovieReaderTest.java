@@ -2,7 +2,6 @@ package moviebuddy.data;
 
 import moviebuddy.MovieBuddyFactory;
 import moviebuddy.MovieBuddyProfile;
-import moviebuddy.data.JaxbMovieReader;
 import moviebuddy.domain.Movie;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -14,18 +13,17 @@ import java.util.List;
 
 @ActiveProfiles(MovieBuddyProfile.XML_MODE)
 @SpringJUnitConfig(MovieBuddyFactory.class)
-public class JaxbMovieReaderTest {
+public class XmlMovieReaderTest {
 
-    final JaxbMovieReader movieReader;
+    final XmlMovieReader movieReader;
 
     @Autowired
-    JaxbMovieReaderTest(JaxbMovieReader movieReader){
+    XmlMovieReaderTest(XmlMovieReader movieReader){
         this.movieReader = movieReader;
     }
 
     @Test
     void NotEmpty_LoadedMovies() {
-        JaxbMovieReader movieReader = new JaxbMovieReader();
         List<Movie> movies = movieReader.loadMovies();
 
         Assertions.assertEquals(1375, movies.size());
