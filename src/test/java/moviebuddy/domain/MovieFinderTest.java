@@ -21,13 +21,13 @@ import java.util.List;
 @SpringJUnitConfig(MovieBuddyFactory.class)
 public class MovieFinderTest {
 
-	MovieFinder movieFinder;
+	@Autowired MovieFinder movieFinder;
 
 	// 1. setter 주입 방식
-	@Autowired
-	void setMovieFinder(MovieFinder movieFinder) {
-		this.movieFinder = movieFinder;
-	}
+//	@Autowired
+//	void setMovieFinder(MovieFinder movieFinder) {
+//		this.movieFinder = movieFinder;
+//	}
 
 
 	@Test
