@@ -4,7 +4,6 @@ import moviebuddy.ApplicationException;
 import moviebuddy.MovieBuddyProfile;
 import moviebuddy.domain.Movie;
 import moviebuddy.domain.MovieReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.stereotype.Repository;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Profile(MovieBuddyProfile.XML_MODE)
 @Repository
-public class XmlMovieReader extends AbstractFileSystemMovieReader implements MovieReader {
+public class XmlMovieReader extends AbstractMetadataResourceMovieReader implements MovieReader {
 
     private final Unmarshaller unmarshaller;
 
@@ -33,8 +32,9 @@ public class XmlMovieReader extends AbstractFileSystemMovieReader implements Mov
     public List<Movie> loadMovies() {
 
         try {
-            final InputStream inputStream = ClassLoader.getSystemResourceAsStream(getMetadata());
-            final Source source = new StreamSource(inputStream);
+//            final InputStream inputStream = ClassLoader.getSystemResourceAsStream(getMetadata());
+            final InputStream content = getMetadataResource().getInputStream();
+            final Source source = new StreamSource(content);
             final MovieMetadata metadata = (MovieMetadata) unmarshaller.unmarshal(source);
 
             return metadata.toMovies();
