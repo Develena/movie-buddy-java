@@ -2,8 +2,10 @@ package moviebuddy;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import moviebuddy.data.CachingMovieReader;
 import moviebuddy.data.CsvMovieReader;
 import moviebuddy.domain.Movie;
+import moviebuddy.domain.MovieReader;
 import org.checkerframework.checker.units.qual.C;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
@@ -45,10 +47,10 @@ public class MovieBuddyFactory {
     @Configuration
     static class DataSourceModuleConfig {
 
-//        @Bean
-//        public CsvMovieReader csvMovieReader(){
-//            CacheManager cacheManager = new CaffeineCacheManager();
-//            return new CsvMovieReader(cacheManager);
-//        }
+        @Primary // 두 개 이상의 동일 타입 빈이 존재할 때, 이 빈을 우선하겠다.
+        @Bean
+        public CachingMovieReader cachingMovieReader(CacheManager cacheManager, MovieReader target){
+            return new CachingMovieReader(cacheManager, target);
+        }
     }
 }
