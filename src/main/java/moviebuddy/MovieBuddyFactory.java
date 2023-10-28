@@ -2,15 +2,21 @@ package moviebuddy;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import moviebuddy.cache.CachingAdvice;
-import moviebuddy.data.CachingMovieReader;
 import moviebuddy.domain.MovieReader;
+import org.aopalliance.aop.Advice;
+import org.springframework.aop.Advisor;
 import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.aop.support.NameMatchMethodPointcut;
+import org.springframework.aop.support.annotation.AnnotationMatchingPointcut;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
+import javax.cache.annotation.CacheResult;
 import java.util.concurrent.TimeUnit;
 
 @Configuration // 이 클래스를 빈 구성 정보(bean metadata)로 선언하겠다.
@@ -32,6 +38,29 @@ public class MovieBuddyFactory {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setCaffeine(Caffeine.newBuilder().expireAfterWrite(3, TimeUnit.SECONDS));
         return cacheManager;
+    }
+
+    // Proxy를 자동으로 등록해주기 위한 빈 등록
+    @Bean
+    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator(){
+        return new DefaultAdvisorAutoProxyCreator();
+    }
+
+    // Caching에 대한 부가기능을 제공하는 어드바이저 등록
+    @Bean
+    public Advisor cachingAdvisor(CacheManager cacheManager){
+        // AnotationMatching 포인트컷
+        AnnotationMatchingPointcut pointcut = new AnnotationMatchingPointcut(null, CacheResult.class);
+        // --> Class 레벨에는 지정하지 않고, Method 레벨에 @CacheResult라는 어노테이션이 달린 pointcut 으로 지정하겠다.
+
+        // 메소드 이름으로 타게팅하는 포인트컷
+//        NameMatchMethodPointcut pointcut = new NameMatchMethodPointcut();
+//        pointcut.setMappedName("load*");
+
+        Advice advice = new CachingAdvice(cacheManager);
+
+        // Advisor = Advice(부가기능) + Pointcut(대상 선정 알고리즘)
+        return new DefaultPointcutAdvisor(pointcut, advice);
     }
 
     // 중첩 클래스
