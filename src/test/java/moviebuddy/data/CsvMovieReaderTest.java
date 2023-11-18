@@ -2,7 +2,6 @@ package moviebuddy.data;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.core.io.DefaultResourceLoader;
 
 import java.io.FileNotFoundException;

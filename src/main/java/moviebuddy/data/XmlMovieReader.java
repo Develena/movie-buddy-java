@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.stereotype.Repository;
 
-import javax.cache.annotation.CacheResult;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
